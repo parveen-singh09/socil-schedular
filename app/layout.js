@@ -15,6 +15,9 @@ export const metadata = {
   title: "PostAI — Smart Social Scheduler",
   description:
     "AI-driven social media scheduling, creation, and performance analysis platform. Design, optimize, and schedule posts across multiple platforms.",
+  icons: {
+    icon: "/icon.svg",
+  },
 };
 
 export default function RootLayout({ children }) {
