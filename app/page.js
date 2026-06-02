@@ -1,7 +1,5 @@
+import SchedulerApp from "./components/SchedulerApp";
+
 export default function Home() {
-  return (
-    <main>
-      <div>Hello World!</div>
-    </main>
-  );
+  return <SchedulerApp />;
 }
