@@ -9,6 +9,9 @@ import QueueView from "./views/QueueView";
 import CalendarView from "./views/CalendarView";
 import AnalyticsView from "./views/AnalyticsView";
 import SettingsView from "./views/SettingsView";
+import AboutView from "./views/AboutView";
+import PrivacyView from "./views/PrivacyView";
+import ContactView from "./views/ContactView";
 import ToastContainer from "./ToastContainer";
 
 const SEED_POSTS = [
@@ -81,6 +84,18 @@ const VIEW_TITLES = {
   settings: {
     title: "Scheduler Settings",
     subtitle: "Configure profiles, custom API keys, and model metrics.",
+  },
+  about: {
+    title: "About PostAI",
+    subtitle: "Learn about the mission, AI engine, and technical primitives behind PostAI.",
+  },
+  privacy: {
+    title: "Privacy Policy",
+    subtitle: "Review how we isolate your social campaigns and protect credentials.",
+  },
+  contact: {
+    title: "Contact Support",
+    subtitle: "Submit support requests directly to Parveen Singh.",
   },
 };
 
@@ -261,6 +276,9 @@ export default function SchedulerApp() {
               onViewChange={setActiveView}
             />
           )}
+          {activeView === "about" && <AboutView />}
+          {activeView === "privacy" && <PrivacyView />}
+          {activeView === "contact" && <ContactView showToast={showToast} />}
         </div>
       </main>
       <ToastContainer toasts={toasts} onRemove={removeToast} />
