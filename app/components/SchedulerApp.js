@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useAuth } from "./AuthContext";
+import AuthPage from "./AuthPage";
 import Sidebar from "./Sidebar";
 import TopHeader from "./TopHeader";
 import DashboardView from "./views/DashboardView";
@@ -100,6 +102,7 @@ const VIEW_TITLES = {
 };
 
 export default function SchedulerApp() {
+  const { user, loading, signout } = useAuth();
   const [activeView, setActiveView] = useState("dashboard");
   const [posts, setPosts] = useState([]);
   const [toasts, setToasts] = useState([]);
@@ -109,26 +112,44 @@ export default function SchedulerApp() {
   });
   const [creatorPrefill, setCreatorPrefill] = useState(null);
 
-  // Load from localStorage on mount
+  // User-specific localStorage keys
+  const postsKey = user ? `postai_posts_${user.id}` : null;
+  const settingsKey = user ? `postai_settings_${user.id}` : null;
+
+  /* eslint-disable react-hooks/set-state-in-effect */
+  // Load from localStorage on mount or when user changes
   useEffect(() => {
-    const storedPosts = localStorage.getItem("postai_posts");
+    if (!user) return;
+
+    const storedPosts = localStorage.getItem(postsKey);
     if (storedPosts) {
-      setPosts(JSON.parse(storedPosts));
+      try {
+        setPosts(JSON.parse(storedPosts));
+      } catch {
+        setPosts(SEED_POSTS);
+      }
     } else {
+      // First time for this user — load seed posts
       setPosts(SEED_POSTS);
     }
-    const storedSettings = localStorage.getItem("postai_settings");
+
+    const storedSettings = localStorage.getItem(settingsKey);
     if (storedSettings) {
-      setSettings(JSON.parse(storedSettings));
+      try {
+        setSettings(JSON.parse(storedSettings));
+      } catch {
+        // Keep defaults
+      }
     }
-  }, []);
+  }, [user, postsKey, settingsKey]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   // Persist posts to localStorage
   useEffect(() => {
-    if (posts.length > 0) {
-      localStorage.setItem("postai_posts", JSON.stringify(posts));
+    if (postsKey && posts.length > 0) {
+      localStorage.setItem(postsKey, JSON.stringify(posts));
     }
-  }, [posts]);
+  }, [posts, postsKey]);
 
   const showToast = useCallback((message, type = "success") => {
     const id = Date.now();
@@ -189,16 +210,45 @@ export default function SchedulerApp() {
   const saveSettings = useCallback(
     (newSettings) => {
       setSettings(newSettings);
-      localStorage.setItem("postai_settings", JSON.stringify(newSettings));
+      if (settingsKey) {
+        localStorage.setItem(settingsKey, JSON.stringify(newSettings));
+      }
       showToast("Settings saved successfully.");
     },
-    [showToast]
+    [showToast, settingsKey]
   );
+
+  // Show loading screen while checking auth
+  if (loading) {
+    return (
+      <div className="auth-loading-screen">
+        <div className="auth-loading-content">
+          <div className="auth-loading-logo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+              <line x1="12" y1="22.08" x2="12" y2="12" />
+            </svg>
+          </div>
+          <span className="auth-loading-text">Loading PostAI...</span>
+        </div>
+      </div>
+    );
+  }
+
+  // Show auth page if not logged in
+  if (!user) {
+    return <AuthPage />;
+  }
 
   const headerInfo = VIEW_TITLES[activeView] || VIEW_TITLES.dashboard;
 
   return (
     <div className="app-container">
+      {/* Animated background orbs */}
+      <div className="auth-orb auth-orb-1" />
+      <div className="auth-orb auth-orb-2" />
+      <div className="auth-orb auth-orb-3" />
       <Sidebar
         activeView={activeView}
         onViewChange={(view) => {
@@ -207,6 +257,8 @@ export default function SchedulerApp() {
           }
           setActiveView(view);
         }}
+        user={user}
+        onSignOut={signout}
       />
       <main className="main-content">
         <TopHeader
@@ -217,7 +269,7 @@ export default function SchedulerApp() {
             setActiveView("creator");
           }}
         />
-        <div className="view-panel">
+        <div key={activeView} className="view-panel animate-view-transition">
           {activeView === "dashboard" && (
             <DashboardView
               posts={posts}

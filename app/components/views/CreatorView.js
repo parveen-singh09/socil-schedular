@@ -15,6 +15,7 @@ export default function CreatorView({ onAddPost, showToast, onViewChange, prefil
   const [isGenerating, setIsGenerating] = useState(false);
   const [postId, setPostId] = useState(prefill?.id || null);
 
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (prefill) {
       const targetPlatform = prefill.platform || "twitter";
@@ -58,6 +59,7 @@ export default function CreatorView({ onAddPost, showToast, onViewChange, prefil
       setDate(currentLocalDate);
     }
   }, [prefill, clearPrefill, showToast]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const charLimit = PLATFORMS[platform]?.limit || 280;
 

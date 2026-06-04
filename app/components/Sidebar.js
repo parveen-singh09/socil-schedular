@@ -1,6 +1,6 @@
 "use client";
 
-export default function Sidebar({ activeView, onViewChange }) {
+export default function Sidebar({ activeView, onViewChange, user, onSignOut }) {
   const navItems = [
     {
       id: "dashboard",
@@ -102,6 +102,20 @@ export default function Sidebar({ activeView, onViewChange }) {
     },
   ];
 
+  // Generate initials from user name
+  const getInitials = (name) => {
+    if (!name) return "U";
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    return parts[0].substring(0, 2).toUpperCase();
+  };
+
+  const displayName = user?.name || "User";
+  const displayEmail = user?.email || "";
+  const initials = getInitials(displayName);
+
   return (
     <aside className="sidebar">
       <div className="sidebar-brand">
@@ -129,11 +143,24 @@ export default function Sidebar({ activeView, onViewChange }) {
       </nav>
 
       <div className="sidebar-profile">
-        <div className="profile-avatar">PS</div>
+        <div className="profile-avatar">{initials}</div>
         <div className="profile-details">
-          <span className="profile-name">Parveen S.</span>
-          <span className="profile-handle">@parveen_sched</span>
+          <span className="profile-name">{displayName}</span>
+          <span className="profile-handle">{displayEmail}</span>
         </div>
+        {onSignOut && (
+          <button
+            className="sidebar-logout-btn"
+            onClick={onSignOut}
+            title="Sign out"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
+          </button>
+        )}
       </div>
     </aside>
   );

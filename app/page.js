@@ -1,5 +1,10 @@
+import { AuthProvider } from "./components/AuthContext";
 import SchedulerApp from "./components/SchedulerApp";
 
 export default function Home() {
-  return <SchedulerApp />;
+  return (
+    <AuthProvider>
+      <SchedulerApp />
+    </AuthProvider>
+  );
 }

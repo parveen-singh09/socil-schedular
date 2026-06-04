@@ -19,7 +19,7 @@ export default function PrivacyView() {
               1. Local-Only Storage Policies
             </h3>
             <p style={{ fontSize: "13px", color: "var(--text-muted)", lineHeight: "1.6", marginBottom: "16px" }}>
-              All drafted post content, tones, dates, times, and mock performance indicators are written directly into your local browser's <code>localStorage</code> database sandbox. No server databases, telemetry brokers, or tracking pixels collect, parse, or transmit your post topics.
+              All drafted post content, tones, dates, times, and mock performance indicators are written directly into your local browser&apos;s <code>localStorage</code> database sandbox. No server databases, telemetry brokers, or tracking pixels collect, parse, or transmit your post topics.
             </p>
 
             <h3 className="settings-subtitle" style={{ fontSize: "16px", marginBottom: "12px" }}>

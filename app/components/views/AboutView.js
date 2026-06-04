@@ -34,7 +34,7 @@ export default function AboutView() {
               <div className="platform-row" style={{ flexDirection: "column", alignItems: "flex-start", gap: "8px", padding: "16px" }}>
                 <h4 style={{ color: "var(--accent-pink)", fontWeight: "600", fontSize: "14px" }}>Isolate sandboxing</h4>
                 <p style={{ fontSize: "12px", color: "var(--text-muted)", lineHeight: "1.4" }}>
-                  All social posts and platform configurations are kept strictly private inside the browser's local sandbox environment.
+                  All social posts and platform configurations are kept strictly private inside the browser&apos;s local sandbox environment.
                 </p>
               </div>
             </div>
