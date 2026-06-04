@@ -69,10 +69,10 @@ export async function POST(request) {
       { user: { id: user.id, name: user.name, email: user.email } },
       { status: 201 }
     );
-  } catch {
-    // Generic error - do not expose internal details
+  } catch (error) {
+    console.error("Signup error details:", error);
     return Response.json(
-      { error: "Something went wrong. Please try again." },
+      { error: `Something went wrong: ${error.message || error.toString()}` },
       { status: 500 }
     );
   }
