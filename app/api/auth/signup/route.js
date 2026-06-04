@@ -59,7 +59,7 @@ export async function POST(request) {
     }
 
     // --- Create Session ---
-    const sessionToken = createSession(user.id);
+    const sessionToken = await createSession(user.id);
 
     // Set HttpOnly session cookie
     const cookieStore = await cookies();

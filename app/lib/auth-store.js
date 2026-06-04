@@ -1,43 +1,27 @@
-import fs from "fs";
-import path from "path";
 import bcrypt from "bcryptjs";
 import { v4 as uuidv4 } from "uuid";
+import clientPromise from "./mongodb";
 
-const DATA_PATH = path.join(process.cwd(), "data", "users.json");
-
-// TODO(security): For production, replace JSON file store with a real database (PostgreSQL, MongoDB, etc.)
-// with proper mTLS connection, least-privilege DB user, and parameterized queries.
+// TODO(security): For production, MongoDB access policies should restrict DB user privileges (RBAC).
 
 /**
- * Read the store from disk.
+ * Get database instance.
  */
-function getStore() {
-  try {
-    const raw = fs.readFileSync(DATA_PATH, "utf-8");
-    return JSON.parse(raw);
-  } catch {
-    return { users: [], sessions: [] };
-  }
-}
-
-/**
- * Write the store to disk.
- */
-function saveStore(store) {
-  const dir = path.dirname(DATA_PATH);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-  fs.writeFileSync(DATA_PATH, JSON.stringify(store, null, 2), "utf-8");
+async function getDb() {
+  const client = await clientPromise;
+  return client.db("social_scheduler");
 }
 
 /**
  * Find a user by email (case-insensitive).
  */
-export function findUserByEmail(email) {
-  const store = getStore();
+export async function findUserByEmail(email) {
+  if (typeof email !== "string") {
+    return null;
+  }
+  const db = await getDb();
   const normalizedEmail = email.toLowerCase().trim();
-  return store.users.find((u) => u.email === normalizedEmail) || null;
+  return await db.collection("users").findOne({ email: normalizedEmail });
 }
 
 /**
@@ -45,10 +29,16 @@ export function findUserByEmail(email) {
  * Returns the created user (without passwordHash) or null if email exists.
  */
 export async function createUser(name, email, password) {
-  const store = getStore();
+  if (typeof name !== "string" || typeof email !== "string" || typeof password !== "string") {
+    return null;
+  }
+
+  const db = await getDb();
   const normalizedEmail = email.toLowerCase().trim();
 
-  if (store.users.find((u) => u.email === normalizedEmail)) {
+  // Check if user already exists
+  const existingUser = await db.collection("users").findOne({ email: normalizedEmail });
+  if (existingUser) {
     return null; // user already exists
   }
 
@@ -63,8 +53,7 @@ export async function createUser(name, email, password) {
     createdAt: new Date().toISOString(),
   };
 
-  store.users.push(user);
-  saveStore(store);
+  await db.collection("users").insertOne(user);
 
   return { id: user.id, name: user.name, email: user.email };
 }
@@ -74,7 +63,10 @@ export async function createUser(name, email, password) {
  * Returns user info (without passwordHash) or null if invalid.
  */
 export async function verifyUser(email, password) {
-  const user = findUserByEmail(email);
+  if (typeof email !== "string" || typeof password !== "string") {
+    return null;
+  }
+  const user = await findUserByEmail(email);
   if (!user) return null;
 
   const isValid = await bcrypt.compare(password, user.passwordHash);
@@ -87,24 +79,27 @@ export async function verifyUser(email, password) {
  * Create a new session for a user.
  * Returns the session token.
  */
-export function createSession(userId) {
-  const store = getStore();
+export async function createSession(userId) {
+  if (typeof userId !== "string") {
+    throw new Error("Invalid userId");
+  }
+  const db = await getDb();
 
   // Clean up expired sessions (older than 7 days)
   const now = Date.now();
   const SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000;
-  store.sessions = store.sessions.filter(
-    (s) => now - new Date(s.createdAt).getTime() < SEVEN_DAYS
-  );
+  const cutoff = new Date(now - SEVEN_DAYS).toISOString();
+  await db.collection("sessions").deleteMany({
+    createdAt: { $lt: cutoff }
+  });
 
   const token = uuidv4();
-  store.sessions.push({
+  await db.collection("sessions").insertOne({
     token,
     userId,
     createdAt: new Date().toISOString(),
   });
 
-  saveStore(store);
   return token;
 }
 
@@ -112,23 +107,22 @@ export function createSession(userId) {
  * Validate a session token.
  * Returns user info or null if invalid/expired.
  */
-export function validateSession(token) {
-  if (!token) return null;
+export async function validateSession(token) {
+  if (!token || typeof token !== "string") return null;
 
-  const store = getStore();
-  const session = store.sessions.find((s) => s.token === token);
+  const db = await getDb();
+  const session = await db.collection("sessions").findOne({ token });
   if (!session) return null;
 
   // Check expiration (7 days)
   const SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000;
   if (Date.now() - new Date(session.createdAt).getTime() > SEVEN_DAYS) {
     // Remove expired session
-    store.sessions = store.sessions.filter((s) => s.token !== token);
-    saveStore(store);
+    await db.collection("sessions").deleteOne({ token });
     return null;
   }
 
-  const user = store.users.find((u) => u.id === session.userId);
+  const user = await db.collection("users").findOne({ id: session.userId });
   if (!user) return null;
 
   return { id: user.id, name: user.name, email: user.email };
@@ -137,18 +131,17 @@ export function validateSession(token) {
 /**
  * Delete a session (logout).
  */
-export function deleteSession(token) {
-  if (!token) return;
-  const store = getStore();
-  store.sessions = store.sessions.filter((s) => s.token !== token);
-  saveStore(store);
+export async function deleteSession(token) {
+  if (!token || typeof token !== "string") return;
+  const db = await getDb();
+  await db.collection("sessions").deleteOne({ token });
 }
 
 /**
  * Delete all sessions for a user.
  */
-export function deleteAllUserSessions(userId) {
-  const store = getStore();
-  store.sessions = store.sessions.filter((s) => s.userId !== userId);
-  saveStore(store);
+export async function deleteAllUserSessions(userId) {
+  if (typeof userId !== "string") return;
+  const db = await getDb();
+  await db.collection("sessions").deleteMany({ userId });
 }

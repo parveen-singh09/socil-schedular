@@ -10,7 +10,7 @@ export async function POST() {
     const sessionCookie = cookieStore.get(SESSION_COOKIE_NAME);
 
     if (sessionCookie && sessionCookie.value) {
-      deleteSession(sessionCookie.value);
+      await deleteSession(sessionCookie.value);
     }
 
     // Clear the session cookie

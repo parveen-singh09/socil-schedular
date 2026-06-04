@@ -11,7 +11,7 @@ export async function GET() {
       return Response.json({ user: null }, { status: 401 });
     }
 
-    const user = validateSession(sessionCookie.value);
+    const user = await validateSession(sessionCookie.value);
     if (!user) {
       return Response.json({ user: null }, { status: 401 });
     }
