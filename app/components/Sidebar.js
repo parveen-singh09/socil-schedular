@@ -72,7 +72,7 @@ export default function Sidebar({ activeView, onViewChange, user, onSignOut }) {
     },
     {
       id: "about",
-      label: "About PostAI",
+      label: "Kiro Startup Deck & Arch",
       icon: (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="12" cy="12" r="10" />
@@ -126,7 +126,7 @@ export default function Sidebar({ activeView, onViewChange, user, onSignOut }) {
             <line x1="12" y1="22.08" x2="12" y2="12" />
           </svg>
         </div>
-        <span className="brand-name">PostAI</span>
+        <span className="brand-name">Aetheris AI</span>
       </div>
 
       <nav className="sidebar-nav">

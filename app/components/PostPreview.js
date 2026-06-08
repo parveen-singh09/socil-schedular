@@ -42,7 +42,7 @@ function LinkedInPreview({ content }) {
         <div className="linkedin-avatar">PS</div>
         <div className="linkedin-userinfo">
           <span className="linkedin-name">Parveen S.</span>
-          <span className="linkedin-headline">Social Product Manager @ PostAI</span>
+          <span className="linkedin-headline">Founder @ Aetheris AI</span>
           <span className="linkedin-time">Just now · 🌎</span>
         </div>
       </div>
@@ -86,7 +86,7 @@ function InstagramPreview({ content }) {
       </div>
       <div className="instagram-graphic-box">
         <div className="instagram-graphic-text">{titleText}</div>
-        <span className="instagram-graphic-watermark">PostAI Optimizer</span>
+        <span className="instagram-graphic-watermark">Aetheris Engine</span>
       </div>
       <div className="instagram-actions">
         <div className="instagram-actions-left">

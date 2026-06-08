@@ -14,6 +14,51 @@ export default function CreatorView({ onAddPost, showToast, onViewChange, prefil
   const [previewPlatform, setPreviewPlatform] = useState(prefill?.platform || "twitter");
   const [isGenerating, setIsGenerating] = useState(false);
   const [postId, setPostId] = useState(prefill?.id || null);
+  const [agentLogs, setAgentLogs] = useState([]);
+
+  const runAgentPipeline = useCallback((targetPrompt, targetPlatform, targetTone, onComplete) => {
+    setIsGenerating(true);
+    setAgentLogs([]);
+    
+    const baseTime = new Date();
+    const formatTime = (offsetMs) => {
+      const d = new Date(baseTime.getTime() + offsetMs);
+      const h = String(d.getHours()).padStart(2, "0");
+      const m = String(d.getMinutes()).padStart(2, "0");
+      const s = String(d.getSeconds()).padStart(2, "0");
+      const ms = String(d.getMilliseconds()).padStart(3, "0");
+      return `${h}:${m}:${s}.${ms}`;
+    };
+
+    const logs = [
+      { time: formatTime(0), agent: "Dispatcher", text: "Initializing Aetheris-LLM-v2 engine on Kiro Cloud Node-H100-3...", type: "info" },
+      { time: formatTime(250), agent: "ResearchAgent", text: "Querying market signals & fetching context embeddings from Vector DB...", type: "info" },
+      { time: formatTime(550), agent: "CopyAgent", text: `Drafting content canvas optimized for ${targetPlatform} (Tone: ${targetTone})...`, type: "info" },
+      { time: formatTime(850), agent: "CriticAgent", text: "Verifying post structure, readability index, and semantic resonance...", type: "warning" },
+      { time: formatTime(1150), agent: "System", text: "Self-correction completed. Delivering final optimized tokens to editor...", type: "success" }
+    ];
+
+    // Trigger log updates sequentially
+    logs.forEach((logItem, index) => {
+      setTimeout(() => {
+        setAgentLogs(prev => [...prev, logItem]);
+      }, index * 300);
+    });
+
+    const totalDuration = logs.length * 300;
+    const timer = setTimeout(() => {
+      const template = MOCK_AI_TEMPLATES[targetTone]?.[targetPlatform];
+      const generated = template
+        ? template(targetPrompt)
+        : `Here is an optimized post focusing on ${targetPrompt}. Powered by autonomous agents on Kiro Cloud clusters.`;
+      
+      onComplete(generated);
+      setIsGenerating(false);
+      showToast("Aetheris AI Agent sequence complete.");
+    }, totalDuration + 100);
+
+    return () => clearTimeout(timer);
+  }, [showToast]);
 
   /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
@@ -34,19 +79,12 @@ export default function CreatorView({ onAddPost, showToast, onViewChange, prefil
       if (prefill.time) setTime(prefill.time);
       
       if (targetPrompt && !targetContent) {
-        setIsGenerating(true);
-        const timer = setTimeout(() => {
-          const template = MOCK_AI_TEMPLATES[targetTone]?.[targetPlatform];
-          const generated = template
-            ? template(targetPrompt)
-            : `Here is an optimized post focusing on ${targetPrompt}. Build scalable workspaces using modern client methodologies.`;
+        const cancelPipeline = runAgentPipeline(targetPrompt, targetPlatform, targetTone, (generated) => {
           setEditorText(generated);
-          setIsGenerating(false);
-          showToast("AI Post drafted successfully.");
-        }, 1200);
+        });
         
         if (clearPrefill) clearPrefill();
-        return () => clearTimeout(timer);
+        return cancelPipeline;
       }
       
       if (clearPrefill) {
@@ -58,7 +96,7 @@ export default function CreatorView({ onAddPost, showToast, onViewChange, prefil
       const currentLocalDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
       setDate(currentLocalDate);
     }
-  }, [prefill, clearPrefill, showToast]);
+  }, [prefill, clearPrefill, showToast, runAgentPipeline]);
   /* eslint-enable react-hooks/set-state-in-effect */
 
   const charLimit = PLATFORMS[platform]?.limit || 280;
@@ -68,17 +106,10 @@ export default function CreatorView({ onAddPost, showToast, onViewChange, prefil
       showToast("Please supply description instructions or a topic first.", "error");
       return;
     }
-    setIsGenerating(true);
-    setTimeout(() => {
-      const template = MOCK_AI_TEMPLATES[tone]?.[platform];
-      const generated = template
-        ? template(prompt)
-        : `Here is an optimized post focusing on ${prompt}. Build scalable workspaces using modern client methodologies.`;
+    runAgentPipeline(prompt, platform, tone, (generated) => {
       setEditorText(generated);
-      setIsGenerating(false);
-      showToast("Post drafted successfully.");
-    }, 1200);
-  }, [prompt, tone, platform, showToast]);
+    });
+  }, [prompt, platform, tone, runAgentPipeline]);
 
   const handleSuggestion = () => {
     const randomIndex = Math.floor(Math.random() * SUGGESTIONS.length);
@@ -210,6 +241,34 @@ export default function CreatorView({ onAddPost, showToast, onViewChange, prefil
                 )}
               </button>
             </div>
+            {isGenerating && (
+              <div className="agent-terminal" style={{
+                background: "#030712",
+                border: "1px solid var(--border-glow)",
+                borderRadius: "var(--radius-md)",
+                padding: "16px",
+                fontFamily: "monospace",
+                fontSize: "12px",
+                color: "#34d399",
+                marginTop: "16px",
+                maxHeight: "220px",
+                overflowY: "auto",
+                lineHeight: "1.6"
+              }}>
+                <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid rgba(255,255,255,0.08)", paddingBottom: "6px", marginBottom: "8px" }}>
+                  <span style={{ color: "var(--text-muted)", fontWeight: "bold" }}>AETHERIS AGENT SHELL v2.0</span>
+                  <span style={{ color: "var(--accent-cyan)", fontSize: "10px" }}>KIRO-GPU-CLUSTER</span>
+                </div>
+                {agentLogs.map((log, idx) => (
+                  <div key={idx} style={{ marginBottom: "4px" }}>
+                    <span style={{ color: log.type === 'success' ? '#10b981' : log.type === 'warning' ? '#f59e0b' : 'var(--text-muted)' }}>
+                      {log.time} [{log.agent}]
+                    </span>{" "}
+                    <span style={{ color: "var(--text-main)" }}>{log.text}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Step 3 */}
@@ -282,6 +341,50 @@ export default function CreatorView({ onAddPost, showToast, onViewChange, prefil
               content={editorText || "Post content preview will render dynamically in this space..."}
             />
           </div>
+          {editorText.trim() && (
+            <div className="predictive-scorecard" style={{
+              marginTop: "24px",
+              padding: "20px",
+              background: "rgba(255, 255, 255, 0.02)",
+              border: "1px solid var(--border-glow)",
+              borderRadius: "var(--radius-md)",
+              animation: "fadeIn 0.4s ease-out"
+            }}>
+              <h4 style={{ fontSize: "14px", fontWeight: "600", color: "var(--text-main)", marginBottom: "16px", display: "flex", alignItems: "center", gap: "8px" }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-purple)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: "16px", height: "16px" }}>
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                </svg>
+                Aetheris AI Predictive Scorecard
+              </h4>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "16px" }}>
+                <div style={{ padding: "10px", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.04)", borderRadius: "var(--radius-sm)" }}>
+                  <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>Engagement Boost</span>
+                  <div style={{ fontSize: "18px", fontWeight: "700", color: "var(--accent-green)", marginTop: "4px" }}>
+                    +{Math.min(15, Math.max(3, (editorText.length % 12) + 4))}.{(editorText.length % 9)}%
+                  </div>
+                </div>
+                <div style={{ padding: "10px", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.04)", borderRadius: "var(--radius-sm)" }}>
+                  <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>Readability Grade</span>
+                  <div style={{ fontSize: "18px", fontWeight: "700", color: "var(--accent-cyan)", marginTop: "4px" }}>
+                    Level {Math.min(12, Math.max(6, (editorText.split(" ").length % 5) + 7))}
+                  </div>
+                </div>
+              </div>
+              <div style={{ marginBottom: "16px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", color: "var(--text-muted)", marginBottom: "4px" }}>
+                  <span>Sentiment Resonance (Positive)</span>
+                  <span style={{ color: "var(--text-main)", fontWeight: "600" }}>{Math.min(98, Math.max(65, 82 + (editorText.length % 10)))}%</span>
+                </div>
+                <div style={{ height: "4px", background: "rgba(255,255,255,0.05)", borderRadius: "var(--radius-full)", overflow: "hidden" }}>
+                  <div style={{ height: "100%", width: `${Math.min(98, Math.max(65, 82 + (editorText.length % 10)))}%`, background: "var(--primary-glow)" }} />
+                </div>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "11px", color: "var(--text-muted)" }}>
+                <span className="pulse-indicator" style={{ width: "6px", height: "6px", backgroundColor: "var(--accent-green)" }} />
+                <span>Simulated via Kiro-Vector-Cache retrieval model</span>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </section>

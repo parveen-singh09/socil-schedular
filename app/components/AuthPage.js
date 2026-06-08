@@ -112,9 +112,9 @@ export default function AuthPage() {
                 <line x1="12" y1="22.08" x2="12" y2="12" />
               </svg>
             </div>
-            <h1 className="auth-brand-title">PostAI</h1>
+            <h1 className="auth-brand-title">Aetheris AI</h1>
             <p className="auth-brand-tagline">
-              Smart Social Scheduler powered by AI
+              Autonomous Multi-Agent Social Scheduler
             </p>
 
             <div className="auth-features">
@@ -127,8 +127,8 @@ export default function AuthPage() {
                   </svg>
                 </div>
                 <div>
-                  <h4>AI-Powered Content</h4>
-                  <p>Generate optimized posts with intelligent tone controls</p>
+                  <h4>Autonomous AI Agents</h4>
+                  <p>Specialized agent pipelines collaborate on context and research</p>
                 </div>
               </div>
               <div className="auth-feature-item">
@@ -141,8 +141,8 @@ export default function AuthPage() {
                   </svg>
                 </div>
                 <div>
-                  <h4>Smart Scheduling</h4>
-                  <p>Plan and schedule across Twitter, LinkedIn & Instagram</p>
+                  <h4>Semantic Dispatcher</h4>
+                  <p>Optimize publication times and campaign queues dynamically</p>
                 </div>
               </div>
               <div className="auth-feature-item">
@@ -153,10 +153,15 @@ export default function AuthPage() {
                   </svg>
                 </div>
                 <div>
-                  <h4>Performance Analytics</h4>
-                  <p>Track engagement and optimize your social strategy</p>
+                  <h4>Predictive Scorecard</h4>
+                  <p>Grade posts with sentiment analysis and engagement forecasts</p>
                 </div>
               </div>
+            </div>
+
+            <div className="kiro-partner-badge" style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "24px", padding: "10px 14px", background: "rgba(255,255,255,0.03)", border: "1px solid var(--border-glow)", borderRadius: "var(--radius-md)", width: "fit-content" }}>
+              <div className="pulse-indicator" style={{ width: "6px", height: "6px" }} />
+              <span style={{ fontSize: "11px", color: "var(--text-muted)", fontWeight: 500 }}>Partnered with <strong>Kiro Cloud</strong> for Startup Accelerator</span>
             </div>
           </div>
         </div>
@@ -168,8 +173,8 @@ export default function AuthPage() {
               <h2>{mode === "signin" ? "Welcome back" : "Create your account"}</h2>
               <p>
                 {mode === "signin"
-                  ? "Sign in to your PostAI dashboard"
-                  : "Start scheduling smarter with PostAI"}
+                  ? "Sign in to your Aetheris AI dashboard"
+                  : "Start scheduling smarter with Aetheris AI"}
               </p>
             </div>
 
@@ -342,7 +347,7 @@ export default function AuthPage() {
           </div>
 
           <p className="auth-footer-text">
-            By continuing, you agree to PostAI&apos;s Terms of Service and Privacy Policy.
+            By continuing, you agree to Aetheris AI&apos;s Terms of Service and Privacy Policy.
           </p>
         </div>
       </div>

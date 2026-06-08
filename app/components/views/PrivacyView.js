@@ -10,7 +10,7 @@ export default function PrivacyView() {
               Data Collection &amp; Sandbox Integrity
             </h3>
             <p className="settings-desc" style={{ marginTop: "0", lineHeight: "1.6" }}>
-              At PostAI, we believe that your digital schedule and social communications belong exclusively to you. The application is architected to prioritize absolute local privacy, isolation, and security.
+              At Aetheris AI, we believe that your digital schedule and social communications belong exclusively to you. The application is architected to prioritize absolute local privacy, isolation, and security.
             </p>
           </div>
 
@@ -42,7 +42,7 @@ export default function PrivacyView() {
               Privacy Statement Compliance
             </h3>
             <p style={{ fontSize: "11px", color: "var(--text-dark)", lineHeight: "1.4" }}>
-              PostAI operates under zero tracking permissions. We do not collect cookies, email listings, browser specs, or geographical telemetries. Build safely.
+              Aetheris AI operates under zero tracking permissions. We do not collect cookies, email listings, browser specs, or geographical telemetries. Build safely.
             </p>
           </div>
         </div>

@@ -21,7 +21,7 @@ const SEED_POSTS = [
     id: "seed-1",
     platform: "twitter",
     content:
-      "Why static site generation (SSG) is crucial for search engine optimization and speed: By building static HTML files during compilations, crawlers index optimized pages instantly without waiting for client-side JavaScript execution. Speed wins search positions! 🚀",
+      "Successfully launched our autonomous multi-agent content pipelines on Kiro Cloud GPU clusters! By orchestrating research, copywriting, and semantic critic agents on dedicated H100s, Aetheris AI delivers 10x higher quality copy with zero human overhead. 🚀 #KiroStartup #AIagents",
     tone: "hype",
     date: "2026-06-05",
     time: "10:00",
@@ -31,7 +31,7 @@ const SEED_POSTS = [
     id: "seed-2",
     platform: "linkedin",
     content:
-      "Reflections on launching our new developer productivity tools live this week:\n\nOur focus was simple: cut down on developer friction. By building clean vanilla web components and keeping standard utilities lightweight, startup times decreased by 40%.\n\nFocusing on minimal packages is a highly underrated architecture decision.",
+      "Why Aetheris AI chose Kiro Serverless for our autonomous background workers:\n\n1. Dynamic scaling: Scale zero-to-thousands of concurrent agent workflows instantly.\n2. Isolated runtimes: Each agent executes in a sandboxed node environment to prevent context mixing.\n3. Latency optimization: Direct network routing to vector DB clusters for immediate RAG retrieval.\n\nScaling an AI agent SaaS has never been cleaner.",
     tone: "professional",
     date: "2026-06-12",
     time: "14:30",
@@ -41,7 +41,7 @@ const SEED_POSTS = [
     id: "seed-3",
     platform: "instagram",
     content:
-      "Why secure database architectures rely on Backend-for-Frontend patterns. Keeping sensitive configurations and private keys strictly off client browsers ensures high session integrity. Let's make safety a default design token!",
+      "Designing Aetheris AI: The Multi-Agent Orchestrator. Instead of a single LLM prompt, our engine passes goals between an Intent Parser, a Research Agent, a Creative Copywriter, and a Critic. The critic self-refines until the output hits a 95% brand alignment score! 🤖🎨",
     tone: "hype",
     date: "2026-06-01",
     time: "09:15",
@@ -51,7 +51,7 @@ const SEED_POSTS = [
     id: "seed-4",
     platform: "linkedin",
     content:
-      "5 design tokens you should include in every vanilla CSS configuration:\n\n1. Harmonious typography sets (Outfit/Inter)\n2. Backdrop blurring properties (Glassmorphism)\n3. Coherent padding hierarchies\n4. Dynamic transition values\n5. Custom focus indicators\n\nSimplifying styling with clean standard CSS provides outstanding user experiences.",
+      "5 ways startup founders can leverage autonomous agent networks for organic growth:\n\n1. Automated target-audience research\n2. Real-time trend alignment and semantic matching\n3. Dynamic multi-platform layout optimization\n4. Closed-loop cohort simulation feedback\n5. Predictive viral and sentiment scoring\n\nAetheris AI is proud to build on Kiro's next-gen cloud to automate this end-to-end.",
     tone: "informative",
     date: "2026-06-19",
     time: "16:00",
@@ -88,8 +88,8 @@ const VIEW_TITLES = {
     subtitle: "Configure profiles, custom API keys, and model metrics.",
   },
   about: {
-    title: "About PostAI",
-    subtitle: "Learn about the mission, AI engine, and technical primitives behind PostAI.",
+    title: "Kiro Startup Credit Hub",
+    subtitle: "Investor pitch deck, agent system architecture, and Kiro Cloud resource blueprint.",
   },
   privacy: {
     title: "Privacy Policy",
@@ -230,7 +230,7 @@ export default function SchedulerApp() {
               <line x1="12" y1="22.08" x2="12" y2="12" />
             </svg>
           </div>
-          <span className="auth-loading-text">Loading PostAI...</span>
+          <span className="auth-loading-text">Loading Aetheris AI...</span>
         </div>
       </div>
     );
