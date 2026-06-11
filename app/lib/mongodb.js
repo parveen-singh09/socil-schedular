@@ -1,13 +1,13 @@
 import { MongoClient } from "mongodb";
 
-if (!process.env.MONGODB_URI) {
+const uri = process.env.MONGODB_URI;
+
+if (!uri && process.env.NODE_ENV !== "production") {
+  // We only throw in non-production environments to alert the developer.
+  // In production (build time), we might not have the URI yet, and we want to let the build proceed.
   throw new Error('Invalid/Missing environment variable: "MONGODB_URI"');
 }
 
-const uri = process.env.MONGODB_URI;
-// TODO(security): Configure TLS/mTLS connection options for MongoDB in production, e.g.:
-// tls: true,
-// tlsCertificateKeyFile: process.env.MONGODB_TLS_CERT_PATH,
 const options = {};
 
 let client;
@@ -21,10 +21,13 @@ if (process.env.NODE_ENV === "development") {
     global._mongoClientPromise = client.connect();
   }
   clientPromise = global._mongoClientPromise;
-} else {
+} else if (uri) {
   // In production mode, it's best to not use a global variable.
   client = new MongoClient(uri, options);
   clientPromise = client.connect();
+} else {
+  // Fallback for build time where MONGODB_URI might be missing
+  clientPromise = Promise.reject(new Error("MongoDB URI is missing. Ensure it is set in environment variables."));
 }
 
 // Export a module-scoped MongoClient promise. By doing this in a

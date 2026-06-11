@@ -2,6 +2,8 @@ import { cookies } from "next/headers";
 import { verifyUser, createSession } from "@/app/lib/auth-store";
 import { SESSION_COOKIE_NAME, SESSION_COOKIE_OPTIONS } from "@/app/lib/auth-config";
 
+export const dynamic = "force-dynamic";
+
 // TODO(security): Add CSRF token validation for production.
 // TODO(security): Add rate limiting to prevent brute-force attacks.
 
