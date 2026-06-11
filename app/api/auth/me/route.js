@@ -2,6 +2,8 @@ import { cookies } from "next/headers";
 import { validateSession } from "@/app/lib/auth-store";
 import { SESSION_COOKIE_NAME } from "@/app/lib/auth-config";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const cookieStore = await cookies();

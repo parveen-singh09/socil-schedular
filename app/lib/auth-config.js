@@ -5,8 +5,8 @@
 const isProduction = process.env.NODE_ENV === "production";
 
 export const SESSION_COOKIE_NAME = isProduction
-  ? "__Secure-postai-session"
-  : "postai-session";
+  ? "__Secure-aetheris-session"
+  : "aetheris-session";
 
 export const SESSION_COOKIE_OPTIONS = {
   httpOnly: true,

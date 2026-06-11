@@ -12,9 +12,9 @@ const outfit = Outfit({
 });
 
 export const metadata = {
-  title: "PostAI — Smart Social Scheduler",
+  title: "Aetheris AI — Autonomous Multi-Agent Social Scheduler",
   description:
-    "AI-driven social media scheduling, creation, and performance analysis platform. Design, optimize, and schedule posts across multiple platforms.",
+    "Scale your brand with collaborative AI agents that draft, critique, schedule, and optimize your social campaigns on Kiro Cloud Infrastructure.",
   icons: {
     icon: "/icon.svg",
   },
